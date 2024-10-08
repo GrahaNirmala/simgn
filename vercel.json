@@ -1,0 +1,11 @@
+{
+    "functions": {
+      "app/api/v1/occupant/export/": {
+        "maxDuration": 60
+      },
+      "app/api/v1/report/export/": {
+        "maxDuration": 60
+      }
+    }
+  }
+  
