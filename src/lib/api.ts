@@ -21,7 +21,7 @@ import { BillingConfigResponse } from "@/server/models/responses/billing-config"
 import { LogActivityResponse } from "@/server/models/responses/log-activity"
 
 const isServer = typeof window === "undefined"
-const baseURL = isServer ? "https://sim-gn-main-web.vercel.app/api/v1" : "/api/v1"
+const baseURL = isServer ? "https://simgn.vercel.app/api/v1" : "/api/v1"
 
 export type FetchError = { field?: string; message: string }[] | null
 

@@ -41,3 +41,4 @@ next-env.d.ts
 
 sim-graha-nirmala-firebase-adminsdk-xiw0i-e33e6b0e0e.json
 .vercel
+.env*.local

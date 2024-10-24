@@ -50,18 +50,10 @@ CREATE TABLE IF NOT EXISTS "announcement" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
 	"content" text NOT NULL,
-	"announcement_category_id" bigint NOT NULL,
 	"author_id" bigint NOT NULL,
+	"storage_id" bigint,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "announcement_category" (
-	"id" bigserial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone,
-	CONSTRAINT "announcement_category_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "billing" (
@@ -120,14 +112,11 @@ CREATE TABLE IF NOT EXISTS "family" (
 	"identity_number" text NOT NULL,
 	"birthday" timestamp NOT NULL,
 	"gender" "gender" NOT NULL,
-	"birthplace" text NOT NULL,
 	"religion" text NOT NULL,
-	"education" text,
 	"job_type" text,
+	"birthplace" text NOT NULL,
 	"marital_status" text NOT NULL,
 	"relationship_status" text NOT NULL,
-	"father_name" text NOT NULL,
-	"mother_name" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone,
 	CONSTRAINT "family_identity_number_unique" UNIQUE("identity_number")
@@ -140,6 +129,16 @@ CREATE TABLE IF NOT EXISTS "house" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone,
 	CONSTRAINT "house_code_unique" UNIQUE("code")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "log_activity" (
+	"id" bigserial PRIMARY KEY NOT NULL,
+	"author_id" bigint NOT NULL,
+	"action" text NOT NULL,
+	"target" text NOT NULL,
+	"details" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "occupant" (
@@ -173,7 +172,7 @@ CREATE TABLE IF NOT EXISTS "payment" (
 	"payer_id" bigint NOT NULL,
 	"invoice" text,
 	"token" text,
-	"mode" "payment_mode" NOT NULL,
+	"mode" text NOT NULL,
 	"status" "payment_status" NOT NULL,
 	"tanggalBilling" timestamp with time zone,
 	"expired_at" timestamp with time zone,
@@ -206,13 +205,13 @@ CREATE TABLE IF NOT EXISTS "storage" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "announcement" ADD CONSTRAINT "announcement_announcement_category_id_announcement_category_id_fk" FOREIGN KEY ("announcement_category_id") REFERENCES "announcement_category"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "announcement" ADD CONSTRAINT "announcement_author_id_staff_id_fk" FOREIGN KEY ("author_id") REFERENCES "staff"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "announcement" ADD CONSTRAINT "announcement_author_id_staff_id_fk" FOREIGN KEY ("author_id") REFERENCES "staff"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "announcement" ADD CONSTRAINT "announcement_storage_id_storage_id_fk" FOREIGN KEY ("storage_id") REFERENCES "storage"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -255,6 +254,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "family" ADD CONSTRAINT "family_occupant_id_occupant_id_fk" FOREIGN KEY ("occupant_id") REFERENCES "occupant"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "log_activity" ADD CONSTRAINT "log_activity_author_id_staff_id_fk" FOREIGN KEY ("author_id") REFERENCES "staff"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

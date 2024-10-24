@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "8ea9804e-0081-4a02-a26c-00d33cbd69df",
+  "id": "3ae1a06e-b8fa-4267-86d5-71163448ef03",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "announcement": {
@@ -26,17 +26,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "announcement_category_id": {
-          "name": "announcement_category_id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
         "author_id": {
           "name": "author_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
+        },
+        "storage_id": {
+          "name": "storage_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -54,19 +54,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "announcement_announcement_category_id_announcement_category_id_fk": {
-          "name": "announcement_announcement_category_id_announcement_category_id_fk",
-          "tableFrom": "announcement",
-          "tableTo": "announcement_category",
-          "columnsFrom": [
-            "announcement_category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "announcement_author_id_staff_id_fk": {
           "name": "announcement_author_id_staff_id_fk",
           "tableFrom": "announcement",
@@ -79,53 +66,23 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "announcement_storage_id_storage_id_fk": {
+          "name": "announcement_storage_id_storage_id_fk",
+          "tableFrom": "announcement",
+          "tableTo": "storage",
+          "columnsFrom": [
+            "storage_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
-    },
-    "announcement_category": {
-      "name": "announcement_category",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigserial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "announcement_category_name_unique": {
-          "name": "announcement_category_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      }
     },
     "billing": {
       "name": "billing",
@@ -510,29 +467,23 @@
           "primaryKey": false,
           "notNull": true
         },
-        "birthplace": {
-          "name": "birthplace",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "religion": {
           "name": "religion",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "education": {
-          "name": "education",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "job_type": {
           "name": "job_type",
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "birthplace": {
+          "name": "birthplace",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "marital_status": {
           "name": "marital_status",
@@ -542,18 +493,6 @@
         },
         "relationship_status": {
           "name": "relationship_status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "father_name": {
-          "name": "father_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "mother_name": {
-          "name": "mother_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -647,6 +586,73 @@
           ]
         }
       }
+    },
+    "log_activity": {
+      "name": "log_activity",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target": {
+          "name": "target",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "log_activity_author_id_staff_id_fk": {
+          "name": "log_activity_author_id_staff_id_fk",
+          "tableFrom": "log_activity",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "occupant": {
       "name": "occupant",
@@ -864,7 +870,7 @@
         },
         "mode": {
           "name": "mode",
-          "type": "payment_mode",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },

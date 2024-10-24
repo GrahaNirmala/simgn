@@ -1,1 +1,0 @@
-ALTER TABLE "payment" ALTER COLUMN "mode" SET DATA TYPE text;
