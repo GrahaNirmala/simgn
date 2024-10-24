@@ -37,8 +37,8 @@ const pageName: { [key: string]: string } = {
   "/admin/transaction/add": "Tambah Transaksi",
   "/admin/transaction/edit": "Edit Trannsaksi",
 
-  "/admin/bill": "Kelola Tagihan",
-  "/admin/bill/change": "Ubah Data Tagihan",
+  "/admin/bill": "Kelola Tagihan Iuran Bulanan",
+  "/admin/bill/change": "Ubah Data Tagihan Iuran Bulanan",
 
   "/admin/log": "Aktivitas Pengurus",
 

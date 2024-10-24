@@ -18,29 +18,29 @@ export default function ReportTable({
 
   return (
     <>
-      <div className="flex justify-evenly">
+      <div className="flex justify-evenly w-full">
         <div
-          className={`cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 ${
+          className={`flex-1 cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 text-center ${
             activeTab === "all" &&
-            "text-secondary border-b-2 border-secondary font-bold"
+            "text-secondary border-b-2 border-secondary font-bold rounded-b-[10px]"
           }`}
           onClick={() => handleTabClick("all")}
         >
           Semua
         </div>
         <div
-          className={`cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 ${
+          className={`flex-1 cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 text-center ${
             activeTab === "income" &&
-            "text-secondary border-b-2 border-secondary font-bold"
+            "text-secondary border-b-2 border-secondary font-bold rounded-b-[10px]"
           }`}
           onClick={() => handleTabClick("income")}
         >
           Pemasukan
         </div>
         <div
-          className={`cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 ${
+          className={`flex-1 cursor-pointer text-xs md:text-base px-[2%] py-2 md:py-4 text-center ${
             activeTab === "outcome" &&
-            "text-secondary border-b-2 border-secondary font-bold"
+            "text-secondary border-b-2 border-secondary font-bold rounded-b-[10px]"
           }`}
           onClick={() => handleTabClick("outcome")}
         >
