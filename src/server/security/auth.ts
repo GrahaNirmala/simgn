@@ -40,6 +40,10 @@ export function throwUnauthorized(): never {
   throw new ApiError(401, "Unauthorized")
 }
 
+export function throwFailed(): never {
+  throw new ApiError(404, "Unauthorized")
+}
+
 export async function getCurrentStaff(req: Request) {
   const sub = req.headers.get(claimSubHeader)
   if (!sub) throwUnauthorized()

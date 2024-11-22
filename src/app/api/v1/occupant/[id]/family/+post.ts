@@ -3,7 +3,7 @@ import { familySchema } from "@/lib/schema"
 import { db } from "@/server/db"
 import { Family, Occupant, TInsertFamily } from "@/server/db/schema"
 import { toFamilyResponse } from "@/server/models/responses/family"
-import { getCurrentStaff, useAuth } from "@/server/security/auth"
+import { getCurrentOccupant, getCurrentStaff, throwFailed, useAuth } from "@/server/security/auth"
 import { logActivity } from "@/server/utils/logging"
 import { defineHandler } from "@/server/web/handler"
 import { bindJson } from "@/server/web/request"
@@ -26,9 +26,11 @@ export const POST = defineHandler(
     }
     const param = await bindJson(req, Param)
 
-    const occupant = await db().query.Occupant.findFirst({
-      where: eq(Occupant.id, params.id),
-    })
+    const occupant = await getCurrentOccupant(req)
+    if (occupant.id != params.id) {
+      throwFailed()
+    }
+    
     if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
 
     const family: TInsertFamily = {

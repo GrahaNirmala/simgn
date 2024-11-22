@@ -1,6 +1,6 @@
 import { db } from "@/server/db"
 import { OccupantDocument, TInsertOccupantDocument } from "@/server/db/schema"
-import { getCurrentOccupant, throwUnauthorized, useAuth } from "@/server/security/auth"
+import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth"
 import { uploadFile } from "@/server/storage"
 import { defineHandler } from "@/server/web/handler"
 import { sendData, sendErrors } from "@/server/web/response"
@@ -17,6 +17,11 @@ export const PUT = defineHandler(
     useAuth(req, {
       occupant: true,
     })
+
+    const occupant = await getCurrentOccupant(req)
+    if (occupant.id != params.id) {
+      throwFailed()
+    }
 
     const formData = await req.formData()
     const file = formData.get("file")

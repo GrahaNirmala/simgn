@@ -1,7 +1,7 @@
 import { errorDefinition } from "@/lib/constants";
 import { db } from "@/server/db";
 import { Occupant } from "@/server/db/schema";
-import { useAuth } from "@/server/security/auth";
+import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth";
 import { defineHandler } from "@/server/web/handler";
 import { bindJson } from "@/server/web/request";
 import { sendData, sendErrors } from "@/server/web/response";
@@ -27,9 +27,10 @@ export const PUT = defineHandler(
   })
   const param = await bindJson(req, Param)
 
-  const occupant = await db().query.Occupant.findFirst({
-    where: eq(Occupant.id, params.id),
-  })
+  const occupant = await getCurrentOccupant(req)
+    if (occupant.id != params.id) {
+      throwFailed()
+    }
 
   if(!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
 

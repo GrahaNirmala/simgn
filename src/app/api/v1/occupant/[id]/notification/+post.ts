@@ -1,9 +1,8 @@
 import { db } from '@/server/db';
-import { useAuth } from "@/server/security/auth";
-import { DeviceToken, Occupant, TInsertDeviceToken } from '@/server/db/schema';
+import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth";
+import { DeviceToken, TInsertDeviceToken } from '@/server/db/schema';
 import { defineHandler } from '@/server/web/handler';
 import { z } from 'zod';
-import { eq } from "drizzle-orm";
 import { bindJson } from '@/server/web/request';
 import { sendData, sendErrors } from '@/server/web/response';
 import { errorDefinition } from '@/lib/constants';
@@ -24,11 +23,13 @@ export const POST = defineHandler(
       occupant: true,
     });
 
+    
     const param = await bindJson(req, Param);
 
-    const occupant = await db().query.Occupant.findFirst({
-      where: eq(Occupant.id, params.id),
-    });
+    const occupant = await getCurrentOccupant(req)
+    if (occupant.id != params.id) {
+      throwFailed()
+    }
 
     if (!occupant) {
       return sendErrors(404, errorDefinition.occupant_not_found_auth);

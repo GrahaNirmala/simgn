@@ -2,7 +2,7 @@ import { db } from "@/server/db"
 import { OccupantDocument, TInsertOccupantDocument } from "@/server/db/schema"
 import {
   getCurrentOccupant,
-  throwUnauthorized,
+  throwFailed,
   useAuth,
 } from "@/server/security/auth"
 import { uploadFile } from "@/server/storage"
@@ -23,7 +23,7 @@ export const POST = defineHandler(
 
     const occupant = await getCurrentOccupant(req)
     if (occupant.id != params.id) {
-      throwUnauthorized()
+      throwFailed()
     }
 
     const formData = await req.formData()
