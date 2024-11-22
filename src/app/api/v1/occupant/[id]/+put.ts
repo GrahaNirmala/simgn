@@ -45,10 +45,6 @@ export const PUT = defineHandler(
       where: eq(Occupant.houseId, param.house_id),
     });
 
-    if (houseBelongToSomeone && houseBelongToSomeone.id !== params.id) {
-      return sendErrors(409, errorDefinition.house_taken);
-    }
-
     if (param.email) {
       let occupantExists = await db().query.Occupant.findFirst({
         where: eq(Occupant.email, param.email),
