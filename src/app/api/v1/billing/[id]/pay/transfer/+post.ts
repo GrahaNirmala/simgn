@@ -18,7 +18,7 @@ export const POST = defineHandler(
     const occupant = await getCurrentOccupant(req);
 
     const billing = await db().query.Billing.findFirst({
-      where: eq(Billing.id, params.id),
+      where: eq(Billing.houseId, params.id),
     });
 
     if (!billing) {

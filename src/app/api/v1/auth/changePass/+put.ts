@@ -36,7 +36,7 @@ export const PUT = defineHandler(async(req) => {
     )
 
     if (!isCorrectPassword)
-        return sendErrors(401, errorDefinition.password_old_incorrect)
+        return sendErrors(404, errorDefinition.password_old_incorrect)
 
 
     const hashedNewPassword = await hashPassword(param.newPassword);
