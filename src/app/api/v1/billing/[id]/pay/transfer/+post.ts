@@ -55,7 +55,7 @@ export const POST = defineHandler(
         email: occupant.email,
         phone: occupant.phone,
       },
-      enabled_payments: ["credit_card", "bank_transfer", "gopay", "shopeepay", "other_qris", "bri_va", "bca_va", "other_qris", "other_va", "bca_klikbca", "bca_klikpay"],
+      enabled_payments: ["credit_card", "bank_transfer", "gopay", "other_qris", "bri_va", "bca_va", "other_qris", "other_va", "bca_klikbca", "bca_klikpay"],
       callbacks: {},
       expiry: {
         start_time: format(now, "yyyy-MM-dd HH:mm:ss +0700"),
