@@ -60,7 +60,7 @@ export const POST = defineHandler(
       expiry: {
         start_time: format(now, "yyyy-MM-dd HH:mm:ss +0700"),
         unit: "minutes",
-        duration: 135,
+        duration: 335,
       },
     };
 
