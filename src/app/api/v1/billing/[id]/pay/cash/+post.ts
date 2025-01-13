@@ -32,10 +32,10 @@ export const POST = defineHandler(
       where: eq(Billing.id, params.id),
     })
 
-    if (!billing) return sendErrors(404, { message: "Billing not found" })
+    if (!billing) return sendErrors(404, errorDefinition.billing_not_found)
 
     if (billing.isPaid) {
-      return sendErrors(423, { message: "Billing already paid" })
+      return sendErrors(423, { message: "Billing Sudah Dibayar" })
     }
 
     const occupant = await db().query.Occupant.findFirst({
@@ -44,11 +44,9 @@ export const POST = defineHandler(
 
     if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
 
-    const house = await db().query.House.findFirst({
-      where: eq(House.id, occupant.houseId),
-    })
-
-    if (!house) return sendErrors(404, errorDefinition.house_not_found)
+    if (billing.houseId !== occupant.houseId) {
+      return sendErrors(400, { message: "Billing house does not match occupant house" });
+    }
     
     const extraCharge = billing.extraCharge ?? 0
     const totalBilling = billing.amount + extraCharge
