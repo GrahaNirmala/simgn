@@ -45,7 +45,7 @@ export const POST = defineHandler(
     if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
 
     if (billing.houseId !== occupant.houseId) {
-      return sendErrors(400, { message: "Billing house does not match occupant house" });
+      return sendErrors(400, { message: "Tagihan rumah tidak sesuai dengan rumah occupant" });
     }
     
     const extraCharge = billing.extraCharge ?? 0
