@@ -1,5 +1,5 @@
 import { db } from "@/server/db"
-import { Billing, DeviceToken, House, Payment, TInsertPayment } from "@/server/db/schema"
+import { Billing, DeviceToken, House, Occupant, Payment, TInsertPayment } from "@/server/db/schema"
 import { getCurrentStaff, useAuth } from "@/server/security/auth"
 import { defineHandler } from "@/server/web/handler"
 import { bindJson } from "@/server/web/request"
@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm"
 import { z } from "zod"
 import { numberFormat } from "@/lib/utils"
 import { logActivity } from "@/server/utils/logging"
+import { errorDefinition } from "@/lib/constants"
 
 type DeviceTokenType = {
   device_token: string | null; 
@@ -27,7 +28,7 @@ export const POST = defineHandler(
     const staff = await getCurrentStaff(req)
     const param = await bindJson(req, Param)
 
-    let billing = await db().query.Billing.findFirst({
+    const billing = await db().query.Billing.findFirst({
       where: eq(Billing.id, params.id),
     })
 
@@ -37,9 +38,17 @@ export const POST = defineHandler(
       return sendErrors(423, { message: "Billing already paid" })
     }
 
-    let house = await db().query.House.findFirst({
-      where: eq(House.id, billing.houseId),
+    const occupant = await db().query.Occupant.findFirst({
+      where: eq(Occupant.id, param.occupant_id),
     })
+
+    if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
+
+    const house = await db().query.House.findFirst({
+      where: eq(House.id, occupant.houseId),
+    })
+
+    if (!house) return sendErrors(404, errorDefinition.house_not_found)
     
     const extraCharge = billing.extraCharge ?? 0
     const totalBilling = billing.amount + extraCharge
