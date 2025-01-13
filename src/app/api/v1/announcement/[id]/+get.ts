@@ -11,6 +11,7 @@ export const GET = defineHandler(
   async (req, { params }: { params: { id: number } }) => {
     useAuth(req, {
       staff: ["admin", "secretary"],
+      occupant: true,
     })
 
     let announcement = await db().query.Announcement.findFirst({
