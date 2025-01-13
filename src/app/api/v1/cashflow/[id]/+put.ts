@@ -33,7 +33,7 @@ export const PUT = defineHandler(
 
 
     if (!cashflow) {
-      return sendErrors(404, {message:"Cashflow not found"});
+      return sendErrors(404, {message:"Cashflow tidak ditemukan"});
     }
 
     let storageId: number | null = null;

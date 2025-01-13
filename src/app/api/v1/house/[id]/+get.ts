@@ -2,7 +2,6 @@ import { errorDefinition } from "@/lib/constants"
 import { db } from "@/server/db"
 import { House, Occupant } from "@/server/db/schema"
 import {
-  HouseResponse,
   HouseResponseWithFamilyCard,
   toHouseResponse,
 } from "@/server/models/responses/house"
