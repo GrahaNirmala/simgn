@@ -16,7 +16,7 @@ export const GET = defineHandler(
     let cashflow = await db().query.Cashflow.findFirst({
       where: eq(Cashflow.id, params.id),
     })
-    if (!cashflow) return sendErrors(404, "Cashflow not found" as any)
+    if (!cashflow) return sendErrors(404, { message: "Cashflow tidak ditemukan"})
 
     return sendData(200, toCashflowResponse(cashflow))
   },
