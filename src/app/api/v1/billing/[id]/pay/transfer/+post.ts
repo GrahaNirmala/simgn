@@ -1,3 +1,4 @@
+import { errorDefinition } from "@/lib/constants";
 import { db } from "@/server/db";
 import { Billing, Payment, TInsertPayment } from "@/server/db/schema";
 import { generateOrderId, snap } from "@/server/providers/midtrans";
@@ -22,10 +23,10 @@ export const POST = defineHandler(
     });
 
     if (!billing) {
-      return sendErrors(404, { message: "Billing not found" });
+      return sendErrors(404, errorDefinition.billing_not_found);
     }
     if (billing.isPaid) {
-      return sendErrors(423, { message: "Billing already paid" });
+      return sendErrors(423, { message: "Tagihan sudah dibayar" });
     }
     
     const totalBilling = billing.amount + (billing.extraCharge ?? 0);
