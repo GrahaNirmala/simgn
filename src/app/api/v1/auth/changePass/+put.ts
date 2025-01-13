@@ -3,7 +3,7 @@ import { db } from "@/server/db";
 import { Occupant } from "@/server/db/schema";
 import { comparePassword, hashPassword } from "@/server/security/password";
 import { defineHandler } from "@/server/web/handler";
-import { useAuth } from "@/server/security/auth"
+import { getCurrentOccupant, throwUnauthorized, useAuth } from "@/server/security/auth"
 import { bindJson } from "@/server/web/request";
 import { sendData, sendErrors } from "@/server/web/response";
 import { eq } from "drizzle-orm";
@@ -24,9 +24,10 @@ export const PUT = defineHandler(async(req) => {
         occupant: true,
       })
     const param = await bindJson(req, Param)
-    const occupant = await db().query.Occupant.findFirst({
-        where: eq(Occupant.id, param.id),
-    })
+    const occupant = await getCurrentOccupant(req)
+    if (occupant.id != param.id) {
+      throwUnauthorized()
+    }
     
     if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found_auth)
 
