@@ -15,6 +15,7 @@ type Config = {
   }
   jwt: {
     secret: string
+    reset: string
     refresh: string
     expiresIn: string
   }
@@ -51,6 +52,7 @@ export const config: Config = {
   },
   jwt: {
     secret: e.JWT_SECRET!,
+    reset: e.JWT_RESET!,
     refresh: e.JWT_REFRESH_TOKEN!,
     expiresIn: e.JWT_EXPIRES_IN!,
   },

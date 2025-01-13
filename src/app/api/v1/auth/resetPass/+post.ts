@@ -20,7 +20,7 @@ export const POST = defineHandler(async (req)=>{
 
     let payload;
     try{
-        payload = verifyToken(params.token, config.jwt.secret)
+        payload = verifyToken(params.token, config.jwt.reset)
     }catch(error){
         return sendErrors(400, errorDefinition.invalid_refresh_token)
     }

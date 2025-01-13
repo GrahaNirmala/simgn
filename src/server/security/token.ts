@@ -37,7 +37,7 @@ export function generateResetToken(sub: string) {
     {
       sub: sub,
     },
-    config.jwt.secret,
+    config.jwt.reset,
     { expiresIn: '1h' },
   );
 }
