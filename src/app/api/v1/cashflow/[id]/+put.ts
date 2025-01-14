@@ -1,8 +1,8 @@
 import { db } from "@/server/db"
-import { CashFlowDocument, Cashflow, TInsertCashFlowDocument } from "@/server/db/schema"
+import { CashFlowDocument, Cashflow, Storage, TInsertCashFlowDocument } from "@/server/db/schema"
 import { CashflowResponse, toCashflowResponse } from "@/server/models/responses/cashflow"
 import { getCurrentStaff, useAuth } from "@/server/security/auth"
-import { uploadFile } from "@/server/storage"
+import { deleteFile, uploadFile } from "@/server/storage"
 import { logActivity } from "@/server/utils/logging"
 import { defineHandler } from "@/server/web/handler"
 import { sendData, sendErrors } from "@/server/web/response"
@@ -20,27 +20,35 @@ export const PUT = defineHandler(
     const formData = await req.formData();
     const title = formData.get("title") as string;
     const amount = parseFloat(formData.get("amount") as string);
-    const movement = formData.get("movement") as "income" | "outcome";
-    const description = formData.get("description") as string | null;
+    const movement = formData.get("movement") as "income" | "outcome"
+    const description = formData.get("description") as string | null
+    const file = formData.get("file") as File | null
 
     let cashflow = await db().query.Cashflow.findFirst({
       where: eq(Cashflow.id, params.id),
     })
 
     if (!title || isNaN(amount) || !movement) {
-      return sendErrors(400, { message: "Required fields are missing or invalid" });
+      return sendErrors(400, { message: "Required fields are missing or invalid" })
     }
-
 
     if (!cashflow) {
-      return sendErrors(404, {message:"Cashflow tidak ditemukan"});
+      return sendErrors(404, {message:"Cashflow tidak ditemukan"})
     }
 
-    let storageId: number | null = null;
+    let storageId: number | null = cashflow.storageId
 
-    const file = formData.get("file");
     if (file) {
-      const storage = await uploadFile(file as File);
+      if(storageId){
+        const oldStorage = await db().query.Storage.findFirst({
+          where: eq(Storage.id, storageId)
+        })
+        if(oldStorage){
+          await deleteFile(oldStorage)
+        }
+        await db().delete(Storage).where(eq(Storage.id, storageId))
+      }
+      const storage = await uploadFile(file as File)
       storageId = storage.id;
     }
 
@@ -48,10 +56,8 @@ export const PUT = defineHandler(
     cashflow.amount = amount
     cashflow.movement = movement
     cashflow.description = description ?? null
-
-    if (storageId) {
-      cashflow.storageId = storageId;
-    }
+    cashflow.storageId = storageId;
+  
 
     await db()
       .update(Cashflow)
@@ -60,19 +66,15 @@ export const PUT = defineHandler(
     
     // Update or insert the CashFlowDocument if storageId is updated
     if (storageId) {
-      // Check if a CashFlowDocument already exists for this cashflow
       const existingDocument = await db().query.CashFlowDocument.findFirst({
         where: eq(CashFlowDocument.cashFlowId, params.id),
       })
-
       if (existingDocument) {
-        // Update the existing document
         await db()
           .update(CashFlowDocument)
           .set({ storageId: storageId })
           .where(eq(CashFlowDocument.cashFlowId, params.id))
       } else {
-        // Insert a new document if none exists
         const cashflowDocument: TInsertCashFlowDocument = {
           type: "receipt",
           cashFlowId: params.id,

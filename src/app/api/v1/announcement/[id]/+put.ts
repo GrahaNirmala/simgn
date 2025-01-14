@@ -1,14 +1,14 @@
 import { errorDefinition } from "@/lib/constants"
 import { db } from "@/server/db"
 import { admin } from "@/server/security/firebase";
-import { Announcement, DeviceToken } from "@/server/db/schema"
+import { Announcement, DeviceToken, Storage } from "@/server/db/schema"
 import { toAnnouncementResponse } from "@/server/models/responses/announcement"
 import { getCurrentStaff, useAuth } from "@/server/security/auth"
 import { defineHandler } from "@/server/web/handler"
 import { sendData, sendErrors } from "@/server/web/response"
 import { eq } from "drizzle-orm"
 import { logActivity } from "@/server/utils/logging";
-import { uploadFile } from "@/server/storage";
+import { deleteFile, uploadFile } from "@/server/storage";
 
 type DeviceTokenType = {
   device_token: string | null;
@@ -35,21 +35,23 @@ export const PUT = defineHandler(
     });
     
     if (!announcement) {
-      return sendErrors(404, errorDefinition.announcement_not_found);
+      return sendErrors(404, errorDefinition.announcement_not_found)
     }
 
-    let storageId: number | null = announcement.storageId;
+    let storageId: number | null = announcement.storageId
 
     if (file) {
-      try {
-        console.log("Uploading file...");
-        const storage = await uploadFile(file);
-        storageId = storage.id;
-        console.log("File uploaded successfully with storage ID:", storageId);
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        return sendErrors(500, { message: "Error uploading file" });
+      if(storageId){
+        const oldStorage = await db().query.Storage.findFirst({
+          where: eq(Storage.id, storageId)
+        })
+        if(oldStorage){
+          await deleteFile(oldStorage)
+        }
+        await db().delete(Storage).where(eq(Storage.id, storageId))
       }
+      const storage = await uploadFile(file);
+      storageId = storage.id;
     }
 
     announcement.title = title;
@@ -105,10 +107,10 @@ export const PUT = defineHandler(
         storageId: storageId ? storageId.toString() : "",
       },
       tokens: validTokens,
-    };
+    }
     
     await admin.messaging().sendEachForMulticast(message);
     
     return sendData(201, toAnnouncementResponse(announcement));
   }
-);
+)
