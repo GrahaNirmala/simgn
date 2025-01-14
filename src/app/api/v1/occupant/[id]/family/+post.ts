@@ -25,16 +25,21 @@ export const POST = defineHandler(
       staff = await getCurrentStaff(req);
     }
     const param = await bindJson(req, Param)
+    let occupant = null;
+    if (role_type === "occupant") {
+      occupant = await getCurrentOccupant(req);
+      
+      if (!occupant) {
+        return sendErrors(404, errorDefinition.occupant_not_found);
+      }
 
-    const occupant = await getCurrentOccupant(req)
-    if (occupant.id != params.id) {
-      throwFailed()
+      if (occupant.id !== params.id) {
+        throwFailed();
+      }
     }
     
-    if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
-
     const family: TInsertFamily = {
-      occupantId: occupant.id,
+      occupantId: occupant ? occupant.id : params.id,
       name: param.name,
       identityNumber: param.identity_number,
       birthday: new Date(param.birthday),
