@@ -19,9 +19,6 @@ export const PUT = defineHandler(
     })
 
     const occupant = await getCurrentOccupant(req)
-    if (occupant.id != params.id) {
-      throwFailed()
-    }
 
     const formData = await req.formData()
     const file = formData.get("file") as File | null
@@ -44,6 +41,10 @@ export const PUT = defineHandler(
       return sendErrors(404, { message: "File Kartu keluarga tidak ditemukan" })
     }
 
+    if (occupant.id != occupantDocument.occupantId) {
+      throwFailed()
+    }
+
     const oldStorage = occupantDocument.storage
 
     const storage = await uploadFile(file as File)
@@ -60,7 +61,6 @@ export const PUT = defineHandler(
       try {
         await deleteFile(oldStorage)
       } catch (error) {
-        console.error("Error deleting old file from Firebase Storage:", error)
         return sendErrors(500, { message: "Gagal Menghapus File Sebelumnya" })
       }
     }

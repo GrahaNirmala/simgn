@@ -23,7 +23,7 @@ export const GET = defineHandler(
       orderBy: desc(OccupantDocument.id),
     })
     if (!occupantDocument || !occupantDocument.storage) {
-      return sendErrors(404, { message: "Family card not found" })
+      return sendErrors(404, { message: "Kartu keluarga tidak ditemukan" })
     }
 
     const fileRef = await getFile(occupantDocument.storage);
