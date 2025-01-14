@@ -26,3 +26,19 @@ export async function getFile(storage: TStorage) {
   const fileRef = bucket.file(objectName);
   return fileRef; 
 }
+
+// Delete a file from Firebase Storage and the database
+export async function deleteFile(storage: TStorage) {
+  const objectName = storage.token + storage.ext;
+  const fileRef = bucket.file(objectName);
+  await fileRef.delete();
+}
+
+// Update a file in Firebase Storage
+export async function updateFile(file: File, oldStorage: TStorage) {
+  // Delete the old file first
+  await deleteFile(oldStorage);
+
+  // Upload the new file
+  return await uploadFile(file);
+}

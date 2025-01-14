@@ -1,7 +1,7 @@
 import { db } from "@/server/db"
 import { OccupantDocument, TInsertOccupantDocument } from "@/server/db/schema"
 import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth"
-import { uploadFile } from "@/server/storage"
+import { deleteFile, uploadFile } from "@/server/storage"
 import { defineHandler } from "@/server/web/handler"
 import { sendData, sendErrors } from "@/server/web/response"
 import { eq, and, desc } from "drizzle-orm"
@@ -25,7 +25,7 @@ export const PUT = defineHandler(
 
     const formData = await req.formData()
     const file = formData.get("file")
-    if (!file) return sendErrors(400, { message: "Please upload file" })
+    if (!file) return sendErrors(400, { message: "Silahkan unggah file kartu keluarga" })
 
     const occupantDocument = await db().query.OccupantDocument.findFirst({
       with: {
@@ -39,19 +39,30 @@ export const PUT = defineHandler(
     })
 
     if (!occupantDocument) {
-      return sendErrors(404, { message: "Family card document not found" })
+      return sendErrors(404, { message: "File Kartu keluarga tidak ditemukan" })
     }
+
+    const oldStorage = occupantDocument.storage
 
     const storage = await uploadFile(file as File)
 
     const updatedDocument: Partial<TInsertOccupantDocument> = {
       storageId: storage.id,
     }
-
+    
     await db().update(OccupantDocument)
       .set(updatedDocument)
       .where(eq(OccupantDocument.id, occupantDocument.id))
 
-    return sendData(200, { message: "Family card updated successfully" })
+    if (oldStorage) {
+      try {
+        await deleteFile(oldStorage)
+      } catch (error) {
+        console.error("Error deleting old file from Firebase Storage:", error)
+        return sendErrors(500, { message: "Gagal Menghapus File Sebelumnya" })
+      }
+    }
+
+    return sendData(200, { message: "File Kartu Keluarga Berhasil Diubah" })
   }
 )

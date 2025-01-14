@@ -38,6 +38,6 @@ export const POST = defineHandler(
     }
 
     await db().insert(OccupantDocument).values(occupantDocument)
-    return sendData(200, { message: "ok" })
+    return sendData(200, { message: "Kartu Keluarga Berhasil ditambahkan" })
   },
 )
