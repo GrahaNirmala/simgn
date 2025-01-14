@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import { defineHandler } from "@/server/web/handler";
 import { getCurrentStaff, useAuth } from "@/server/security/auth";
 import { logActivity } from "@/server/utils/logging";
+import { sendErrors } from "@/server/web/response";
 
 export const GET = defineHandler(async (req) => {
     useAuth(req, { staff: ["admin", "secretary"] });
@@ -15,7 +16,7 @@ export const GET = defineHandler(async (req) => {
     const yearParam = url.searchParams.get("year");
 
     if (!monthParam || !yearParam) {
-        throw new Error("Month and year are required.");
+        return sendErrors(423, {message: "Bulan dan tahun dibutuhkan."});
     }
 
     const currentMonth = parseInt(monthParam);
