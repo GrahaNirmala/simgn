@@ -14,7 +14,7 @@ export const GET = defineHandler(
     const cashflow = await db().query.Cashflow.findFirst({
       where: eq(Cashflow.id, params.id),
     })
-    if (!cashflow) return sendErrors(404, { message: "Reciept not found" })
+    if (!cashflow) return sendErrors(404, { message: "Nota Tidak ditemukan" })
 
     const cashflowDocument = await db().query.CashFlowDocument.findFirst({
       with: {
@@ -27,7 +27,7 @@ export const GET = defineHandler(
       orderBy: desc(CashFlowDocument.id),
     })
     if (!cashflowDocument || !cashflowDocument.storage) {
-      return sendErrors(404, { message: "Reciept not found" })
+      return sendErrors(404, { message: "Nota Tidak ditemukan" })
     }
 
     const fileRef = await getFile(cashflowDocument.storage);

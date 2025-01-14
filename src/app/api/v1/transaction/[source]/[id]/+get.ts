@@ -58,7 +58,7 @@ export const GET = defineHandler(async (req, { params }) => {
     }
 
     if (results.length === 0) {
-      return sendErrors(404, { message: "Transaction not found" });
+      return sendErrors(404, { message: "Transaksi tidak ditemukan" });
     }
 
     const transactions: TransactionCasflow[] = results.map((result) => ({
