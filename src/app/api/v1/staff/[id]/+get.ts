@@ -15,7 +15,7 @@ export const GET = defineHandler(
     let staff = await db().query.Staff.findFirst({
       where: eq(Staff.id, params.id),
     })
-    if (staff === null) sendErrors(404, errorDefinition.staff_not_found)
+    if (!staff) return sendErrors(404, errorDefinition.staff_not_found)
 
     return sendData(200, toStaffResponse(staff))
   },
