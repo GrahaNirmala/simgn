@@ -1,3 +1,4 @@
+import { errorDefinition } from "@/lib/constants";
 import { db } from "@/server/db";
 import { Billing, Payment, TInsertPayment } from "@/server/db/schema";
 import { generateOrderId, snap } from "@/server/providers/midtrans";
@@ -25,16 +26,23 @@ export const POST = defineHandler(async (req) => {
   let totalBillingAmount = 0;
   const itemDetails = [];
 
+  const billings = await db().query.Billing.findMany({
+    where: (billing) => sql`${billing.id} IN (${param.ids.join(",")})`,
+  });
+
+  if (billings.length === 0) {
+    return sendErrors(404, errorDefinition.billing_not_found);
+  }
 
   for (const id of param.ids) {
     const billing = await db().query.Billing.findFirst({
       where: eq(Billing.id, id),
     });  
     if (!billing) {
-      return sendErrors(404, { message: `Billing with ID ${id} not found` });
+      return sendErrors(404, { message: `Tagihan dengan ID ${id} tidak ditemukan` });
     }  
     if (billing.isPaid) {
-      return sendErrors(423, { message: `Billing with ID ${id} already paid` });
+      return sendErrors(423, { message: `Tagihan dengan ID ${id} telah dibayar` });
     }  
     const billingAmount = billing.amount + (billing.extraCharge ?? 0);
     
