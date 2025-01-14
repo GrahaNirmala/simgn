@@ -1,5 +1,5 @@
 import { db } from "@/server/db"
-import { Cashflow } from "@/server/db/schema"
+import { CashFlowDocument, Cashflow, TInsertCashFlowDocument } from "@/server/db/schema"
 import { CashflowResponse, toCashflowResponse } from "@/server/models/responses/cashflow"
 import { getCurrentStaff, useAuth } from "@/server/security/auth"
 import { uploadFile } from "@/server/storage"
@@ -57,6 +57,31 @@ export const PUT = defineHandler(
       .update(Cashflow)
       .set(cashflow)
       .where(eq(Cashflow.id, params.id))
+    
+    // Update or insert the CashFlowDocument if storageId is updated
+    if (storageId) {
+      // Check if a CashFlowDocument already exists for this cashflow
+      const existingDocument = await db().query.CashFlowDocument.findFirst({
+        where: eq(CashFlowDocument.cashFlowId, params.id),
+      })
+
+      if (existingDocument) {
+        // Update the existing document
+        await db()
+          .update(CashFlowDocument)
+          .set({ storageId: storageId })
+          .where(eq(CashFlowDocument.cashFlowId, params.id))
+      } else {
+        // Insert a new document if none exists
+        const cashflowDocument: TInsertCashFlowDocument = {
+          type: "receipt",
+          cashFlowId: params.id,
+          storageId: storageId,
+        };
+
+    await db().insert(CashFlowDocument).values(cashflowDocument);
+  }
+}
 
     const formattedRole = staff.role === "secretary" 
       ? "sekretaris" 
