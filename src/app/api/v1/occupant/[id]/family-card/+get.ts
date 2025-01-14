@@ -1,10 +1,7 @@
 import { errorDefinition } from "@/lib/constants";
-import { db } from "@/server/db";
-import { Occupant } from "@/server/db/schema";
 import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth";
 import { defineHandler } from "@/server/web/handler";
 import { sendData, sendErrors } from "@/server/web/response";
-import { eq } from "drizzle-orm";
 
 export const GET = defineHandler(
   async (req, { params }: { params: { id: number } }) => {

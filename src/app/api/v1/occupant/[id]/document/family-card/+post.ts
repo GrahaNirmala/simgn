@@ -27,8 +27,10 @@ export const POST = defineHandler(
     }
 
     const formData = await req.formData()
-    const file = formData.get("file")
-    if (!file) return sendErrors(400, { message: "Please upload file" })
+    const file = formData.get("file") as File | null
+    if (!file || file.size === 0) {
+      return sendErrors(400, { message: "Silahkan unggah file kartu keluarga" });
+    }
 
     const storage = await uploadFile(file as File)
     const occupantDocument: TInsertOccupantDocument = {

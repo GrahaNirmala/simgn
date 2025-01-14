@@ -31,9 +31,11 @@ export const POST = defineHandler(async (req) => {
 
     let storageId: number | null = null;
 
-    if (file) {
-      const storage = await uploadFile(file as File);
+    if (file && file instanceof File && file.size > 0) {
+      const storage = await uploadFile(file);
       storageId = storage.id;
+    } else if (file) {
+      return sendErrors(400, { message: "Uploaded file is empty or invalid" });
     }
 
     const announcement: TInsertAnnouncement = {

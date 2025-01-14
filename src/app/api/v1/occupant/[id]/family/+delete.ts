@@ -49,6 +49,6 @@ export const DELETE = defineHandler(
         `Pengurus dengan nama ${staff.name} dengan Role ${formattedRole} Menghapus data Anggota Keluarga dengan nama ${familyMember.name}`
       );
     }
-    return sendData(200, { message: "Family member deleted successfully" })
+    return sendData(200, { message: "Anggota keluarga berhasil dihapus" })
   },
 )

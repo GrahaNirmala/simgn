@@ -40,7 +40,7 @@ export const PUT = defineHandler(
 
     let storageId: number | null = announcement.storageId
 
-    if (file) {
+    if (file && file instanceof File && file.size > 0) {
       if(storageId){
         const oldStorage = await db().query.Storage.findFirst({
           where: eq(Storage.id, storageId)
@@ -52,6 +52,8 @@ export const PUT = defineHandler(
       }
       const storage = await uploadFile(file);
       storageId = storage.id;
+    }else if (file) {
+      return sendErrors(400, { message: "Uploaded file is empty or invalid" });
     }
 
     announcement.title = title;

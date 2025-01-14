@@ -24,8 +24,10 @@ export const PUT = defineHandler(
     }
 
     const formData = await req.formData()
-    const file = formData.get("file")
-    if (!file) return sendErrors(400, { message: "Silahkan unggah file kartu keluarga" })
+    const file = formData.get("file") as File | null
+    if (!file || file.size === 0) {
+      return sendErrors(400, { message: "Silahkan unggah file kartu keluarga" });
+    }
 
     const occupantDocument = await db().query.OccupantDocument.findFirst({
       with: {
