@@ -17,7 +17,7 @@ export const GET = defineHandler(
     const occupant = await db().query.Occupant.findFirst({
       where: eq(Occupant.id, params.id),
     })
-    if (!occupant) sendErrors(404, errorDefinition.occupant_not_found)
+    if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
 
     return sendData(200, toOccupantResponse(occupant))
   },
