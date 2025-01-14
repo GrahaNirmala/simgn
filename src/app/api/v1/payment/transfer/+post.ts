@@ -11,7 +11,7 @@ import { and, eq, gte, sql } from "drizzle-orm";
 import { z } from "zod";
 
 const Param = z.object({
-  ids: z.array(z.number())
+  ids: z.array(z.number()).nonempty()
 });
 
 export const POST = defineHandler(async (req) => {
@@ -26,11 +26,7 @@ export const POST = defineHandler(async (req) => {
   let totalBillingAmount = 0;
   const itemDetails = [];
 
-  const billings = await db().query.Billing.findMany({
-    where: (billing) => sql`${billing.id} IN (${param.ids.join(",")})`,
-  });
-
-  if (billings.length === 0) {
+  if (Param === null) {
     return sendErrors(404, errorDefinition.billing_not_found);
   }
 
@@ -42,7 +38,7 @@ export const POST = defineHandler(async (req) => {
       return sendErrors(404, { message: `Tagihan dengan ID ${id} tidak ditemukan` });
     }  
     if (billing.isPaid) {
-      return sendErrors(423, { message: `Tagihan dengan ID ${id} telah dibayar` });
+      return sendErrors(423, { message: `Tagihan dengan ID ${id} sudah dibayar` });
     }  
     const billingAmount = billing.amount + (billing.extraCharge ?? 0);
     
