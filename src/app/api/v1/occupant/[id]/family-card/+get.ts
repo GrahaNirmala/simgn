@@ -1,7 +1,7 @@
 import { errorDefinition } from "@/lib/constants";
 import { db } from "@/server/db";
 import { Occupant } from "@/server/db/schema";
-import { useAuth } from "@/server/security/auth";
+import { getCurrentOccupant, throwFailed, useAuth } from "@/server/security/auth";
 import { defineHandler } from "@/server/web/handler";
 import { sendData, sendErrors } from "@/server/web/response";
 import { eq } from "drizzle-orm";
@@ -12,11 +12,15 @@ export const GET = defineHandler(
       occupant: true,
     });
 
-    const occupant = await db().query.Occupant.findFirst({
-      where: eq(Occupant.id, params.id),
-    });
+    const occupant = await getCurrentOccupant(req);
 
-    if (!occupant) return sendErrors(404, errorDefinition.occupant_not_found);
+    if (!occupant) {
+      return sendErrors(404, errorDefinition.occupant_not_found);
+    }
+    
+    if (occupant.id !== params.id) {
+      throwFailed();
+    }
 
     return sendData(200, {
       familyCard: occupant.familyCard, 

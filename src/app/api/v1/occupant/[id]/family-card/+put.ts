@@ -26,14 +26,13 @@ export const PUT = defineHandler(
     occupant: true,
   })
   const param = await bindJson(req, Param)
-
-  const occupant = await getCurrentOccupant(req)
-    if (occupant.id != params.id) {
-      throwFailed()
-    }
-
-  if(!occupant) return sendErrors(404, errorDefinition.occupant_not_found)
-
+  const occupant = await getCurrentOccupant(req);
+  if (!occupant) {
+    return sendErrors(404, errorDefinition.occupant_not_found);
+  }
+  if (occupant.id !== params.id) {
+    throwFailed();
+  }
   await db().update(Occupant)
   .set({familyCard: param})
   .where(eq(Occupant.id, params.id))
