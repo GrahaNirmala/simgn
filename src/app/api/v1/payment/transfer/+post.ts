@@ -100,7 +100,7 @@ export const POST = defineHandler(async (req) => {
       where: eq(Billing.id, id),
     });  
     if (!billing) {
-      return sendErrors(404, { message: "Billing not found" });
+      return sendErrors(404, errorDefinition.billing_not_found);
     }  
     const totalBilling = billing.amount + (billing.extraCharge ?? 0);  
     const payment: TInsertPayment = {
